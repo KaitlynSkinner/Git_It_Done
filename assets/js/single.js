@@ -1,10 +1,31 @@
 // Variables for div elements in <main> to display API data
 var issueContainerEl = document.querySelector("#issues-container");
 var limitWarningEl = document.querySelector("#limit-warning");
+var repoNameEl = document.querySelector("#repo-name");
+
+// Use the split method to extract the query value(repo name)
+var getRepoName = function() {
+    // get repo name from url query string
+    var queryString = document.location.search;
+
+    var repoName = queryString.split("=")[1];
+    //console.log(repoName);
+
+    //check if the repo name exists - display the repo name and make the fetch call 
+    if (repoName) {
+        repoNameEl.textContent = repoName;
+
+        getRepoIssues(repoName);
+    }
+    //if the repo name does not exist - redirect the user back to the homepage to try again
+    else {
+        document.location.replace("/index.html");
+    }
+};
 
 // Fetch GitHub Repo's API Data
 var getRepoIssues = function(repo) {
-    console.log(repo);
+    //console.log(repo);
 
     var apiUrl = "https://api.github.com/repos/" + repo + "/issues?direction=asc";
 
@@ -15,14 +36,17 @@ var getRepoIssues = function(repo) {
                 //console.log(data);
                 // pass response data to dom function
                 displayIssues(data);
-                getRepoIssues(repo);
             });
             //check if api has paginated issues
-            //if (response.headers.get("Link")) {
+            if (response.headers.get("Link")) {
                 //console.log("repo has more than 30 issues");
-            //}
+                displayWarning(repo);
+            }
         } else {
-            alert("There was a problem with your request!");
+            //alert("There was a problem with your request!");
+        
+            //if not successful, take user back to homepage
+            document.location.replace("/index.html");
         }
     });
 };
@@ -81,4 +105,4 @@ var displayWarning = function(repo) {
     limitWarningEl.appendChild(linkEl);
 };
 
-getRepoIssues("facebook/react");
+getRepoName();
