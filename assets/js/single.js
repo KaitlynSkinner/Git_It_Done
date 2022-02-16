@@ -1,5 +1,8 @@
+// Variables for div elements in <main> to display API data
 var issueContainerEl = document.querySelector("#issues-container");
+var limitWarningEl = document.querySelector("#limit-warning");
 
+// Fetch GitHub Repo's API Data
 var getRepoIssues = function(repo) {
     console.log(repo);
 
@@ -12,7 +15,12 @@ var getRepoIssues = function(repo) {
                 //console.log(data);
                 // pass response data to dom function
                 displayIssues(data);
+                getRepoIssues(repo);
             });
+            //check if api has paginated issues
+            //if (response.headers.get("Link")) {
+                //console.log("repo has more than 30 issues");
+            //}
         } else {
             alert("There was a problem with your request!");
         }
@@ -60,4 +68,17 @@ var displayIssues = function(issues) {
     }
 };
 
-getRepoIssues("kaitlynskinner/personal_portfolio");
+//Display Warning to user if more than 30 repo issues
+var displayWarning = function(repo) {
+    //add text to warning container
+    limitWarningEl.textContent = "To see more than 30 issues visit ";
+
+    var linkEl = document.createElement("a");
+    linkEl.textContent = "See More Issues on GitHub.com";
+    linkEl.setAttribute("href", "https://github.com/" + repo + "/issues");
+
+    //append to warning container
+    limitWarningEl.appendChild(linkEl);
+};
+
+getRepoIssues("facebook/react");
